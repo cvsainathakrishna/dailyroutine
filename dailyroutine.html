@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishna Routine Tracker</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --accent: #10b981;
+            --danger: #f43f5e;
+            --bg-gradient: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        /* Header Section */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .date-display {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Progress Circle */
+        .progress-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .progress-text {
+            flex: 1;
+        }
+
+        .progress-text h2 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .progress-text p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .score-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-top: 5px;
+        }
+
+        .circle-bg {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        svg circle {
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform: translate(5px, 5px);
+        }
+
+        .circle-back {
+            stroke: #e2e8f0;
+        }
+
+        .circle-front {
+            stroke: var(--primary);
+            stroke-dasharray: 220; /* Circumference approx */
+            stroke-dashoffset: 220;
+            transition: stroke-dashoffset 0.5s ease-out;
+            transform: rotate(-90deg) translate(5px, -5px); 
+            transform-origin: center;
+        }
+
+        .progress-percent {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Task List */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .task-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border-color: var(--primary-light);
+        }
+
+        /* Animation delay for list items */
+        .task-card:nth-child(1) { animation-delay: 0.1s; }
+        .task-card:nth-child(2) { animation-delay: 0.15s; }
+        .task-card:nth-child(3) { animation-delay: 0.2s; }
+        .task-card:nth-child(4) { animation-delay: 0.25s; }
+        .task-card:nth-child(5) { animation-delay: 0.3s; }
+        .task-card:nth-child(6) { animation-delay: 0.35s; }
+        .task-card:nth-child(7) { animation-delay: 0.4s; }
+
+        .task-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: #e0e7ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .task-details {
+            flex: 1;
+        }
+
+        .task-name {
+            font-size: 1rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .task-points {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Custom Checkbox */
+        .check-box {
+            width: 26px;
+            height: 26px;
+            border: 2px solid #cbd5e1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .check-box i {
+            font-size: 0.8rem;
+            color: white;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.2s ease;
+        }
+
+        /* Completed State */
+        .completed .task-icon {
+            background: var(--accent);
+            color: white;
+        }
+
+        .completed .check-box {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .completed .check-box i {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .completed .task-name {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .completed .task-points {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Reset Button */
+        .reset-btn {
+            width: 100%;
+            margin-top: 30px;
+            padding: 15px;
+            border: none;
+            background: white;
+            color: var(--danger);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.15);
+        }
+
+        .reset-btn:hover {
+            background: var(--danger);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(244, 63, 94, 0.25);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 400px) {
+            h1 { font-size: 1.5rem; }
+            .task-icon { width: 40px; height: 40px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>Krishna Routine</h1>
+        <div class="date-display" id="currentDate"></div>
+    </header>
+
+    <div class="progress-card">
+        <div class="progress-text">
+            <h2>Daily Progress</h2>
+            <p>Keep going! Consistency is key.</p>
+            <div class="score-display"><i class="fa-solid fa-coins"></i> <span id="totalPoints">0</span> pts</div>
+        </div>
+        <div class="circle-bg">
+            <svg viewBox="0 0 80 80">
+                <circle class="circle-back" cx="35" cy="35" r="35"></circle>
+                <circle class="circle-front" id="progressCircle" cx="35" cy="35" r="35"></circle>
+            </svg>
+            <div class="progress-percent" id="progressPercent">0%</div>
+        </div>
+    </div>
+
+    <div class="task-list" id="taskList">
+        <!-- Tasks injected by JS -->
+    </div>
+
+    <button class="reset-btn" onclick="resetDay()">
+        <i class="fa-solid fa-arrows-rotate"></i> Start New Day
+    </button>
+</div>
+
+<script>
+    // --- Configuration ---
+    const defaultTasks = [
+        { id: 1, name: "Waking Up", points: 10, icon: "fa-sun", completed: false },
+        { id: 2, name: "Bathing", points: 5, icon: "fa-droplet", completed: false },
+        { id: 3, name: "Sandhyavandam", points: 20, icon: "fa-om", completed: false },
+        { id: 4, name: "Going to College", points: 15, icon: "fa-building-columns", completed: false },
+        { id: 5, name: "Coding Practice", points: 30, icon: "fa-laptop-code", completed: false },
+        { id: 6, name: "Assignments", points: 25, icon: "fa-book", completed: false },
+        { id: 7, name: "GATE Preparation", points: 40, icon: "fa-graduation-cap", completed: false }
+    ];
+
+    // --- State Management ---
+    let tasks = JSON.parse(localStorage.getItem('krishna_tasks_v2')) || defaultTasks;
+    let totalScore = parseInt(localStorage.getItem('krishna_score_v2')) || 0;
+
+    // --- DOM Elements ---
+    const taskListEl = document.getElementById('taskList');
+    const totalPointsEl = document.getElementById('totalPoints');
+    const progressCircle = document.getElementById('progressCircle');
+    const progressPercent = document.getElementById('progressPercent');
+    const currentDateEl = document.getElementById('currentDate');
+
+    // --- Initialization ---
+    function init() {
+        renderDate();
+        renderTasks();
+        updateStats();
+    }
+
+    function renderDate() {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        currentDateEl.innerText = new Date().toLocaleDateString('en-US', options);
+    }
+
+    function saveData() {
+        localStorage.setItem('krishna_tasks_v2', JSON.stringify(tasks));
+        localStorage.setItem('krishna_score_v2', totalScore);
+    }
+
+    function renderTasks() {
+        taskListEl.innerHTML = '';
+        tasks.forEach(task => {
+            const taskEl = document.createElement('div');
+            taskEl.className = `task-card ${task.completed ? 'completed' : ''}`;
+            
+            taskEl.innerHTML = `
+                <div class="task-icon">
+                    <i class="fa-solid ${task.icon}"></i>
+                </div>
+                <div class="task-details">
+                    <span class="task-name">${task.name}</span>
+                    <span class="task-points">+${task.points} Points</span>
+                </div>
+                <div class="check-box">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+            `;
+
+            // Event Listener
+            taskEl.addEventListener('click', () => toggleTask(task.id));
+            taskListEl.appendChild(taskEl);
+        });
+    }
+
+    function toggleTask(id) {
+        const task = tasks.find(t => t.id === id);
+        
+        if (task.completed) {
+            task.completed = false;
+            totalScore -= task.points;
+        } else {
+            task.completed = true;
+            totalScore += task.points;
+        }
+        
+        saveData();
+        renderTasks(); // Re-render to update classes
+        updateStats();
+    }
+
+    function updateStats() {
+        const completedCount = tasks.filter(t => t.completed).length;
+        const totalTasks = tasks.length;
+        const percent = Math.round((completedCount / totalTasks) * 100);
+
+        // Update Points
+        totalPointsEl.innerText = totalScore;
+
+        // Update Progress Circle
+        // Circumference = 2 * PI * Radius approx 220
+        const offset = 220 - (220 * percent / 100);
+        progressCircle.style.strokeDashoffset = offset;
+        progressPercent.innerText = `${percent}%`;
+    }
+
+    function resetDay() {
+        if(confirm("Reset all tasks for a new day? Your total score will be saved.")) {
+            tasks.forEach(t => t.completed = false);
+            saveData();
+            renderTasks();
+            updateStats();
+        }
+    }
+
+    // Start App
+    init();
+</script>
+
+</body>
+</html>
